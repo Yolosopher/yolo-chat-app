@@ -23,7 +23,7 @@ import UserBadgeItem from '../user/UserBadgeItem';
 import axios from 'axios';
 import UserListItem from '../user/UserListItem';
 
-const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
+const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
 	const { user, selectedChat, setSelectedChat } = ChatState();
 
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -72,6 +72,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
 				? setSelectedChat(null)
 				: setSelectedChat(data);
 			setFetchAgain(!fetchAgain);
+			fetchMessages();
 		} catch (error) {
 			toast({
 				title: 'Error Occured',
