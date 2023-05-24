@@ -5,6 +5,7 @@ import {
 	isSameSender,
 	isSameSenderMargin,
 	isSameUser,
+	shrinkPic,
 } from '../config/ChatLogics';
 import { ChatState } from '../context/ChatProvider';
 import { Avatar, Tooltip } from '@chakra-ui/react';
@@ -29,7 +30,7 @@ const ScrollableChat = ({ messages }) => {
 									size={'sm'}
 									cursor={'pointer'}
 									name={m.sender.name}
-									src={m.sender.pic}
+									src={shrinkPic(m.sender.pic)}
 								/>
 							</Tooltip>
 						)}

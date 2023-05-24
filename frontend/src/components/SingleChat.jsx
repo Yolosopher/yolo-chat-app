@@ -17,15 +17,54 @@ import { useState } from 'react';
 import axios from 'axios';
 import './styles.css';
 import ScrollableChat from './ScrollableChat';
+import io from 'socket.io-client';
+import Lottie from 'lottie-react';
+import animationData from '../animations/typing.json';
+
+const ENDPOINT = 'http://localhost:5000';
+var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 	const [messages, setMessages] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [newMessage, setNewMessage] = useState('');
+	const [socketConnected, setSocketConnected] = useState(false);
+	const [typing, setTyping] = useState(false);
+	const [isTyping, setIsTyping] = useState(false);
+	const [typingTimeOutFunc, setTypingTimeOutFunc] = useState(null);
 
 	const { user, selectedChat, setSelectedChat } = ChatState();
 
 	const toast = useToast();
+
+	useEffect(() => {
+		socket = io(ENDPOINT);
+		socket.emit('setup', user);
+		socket.on('connected', () => setSocketConnected(true));
+		socket.on('typing', () => setIsTyping(true));
+		socket.on('stop typing', () => setIsTyping(false));
+	}, []);
+
+	useEffect(() => {
+		fetchMessages();
+
+		selectedChatCompare = selectedChat;
+	}, [selectedChat]);
+
+	useEffect(() => {
+		socket.on('message recieved', newMessageRecieved => {
+			console.log(newMessageRecieved);
+
+			if (
+				!selectedChatCompare || // if chat is not selected or doesn't match current chat
+				selectedChatCompare._id !== newMessageRecieved.chat._id
+			) {
+				// give notification
+			} else {
+				setMessages([...messages, newMessageRecieved]);
+			}
+		});
+	});
 
 	const fetchMessages = async () => {
 		if (!selectedChat) return;
@@ -43,8 +82,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 				config
 			);
 
-			console.log(data);
 			setMessages(data);
+
+			socket.emit('join chat', selectedChat._id);
 		} catch (error) {
 			toast({
 				title: 'An error occurred.',
@@ -59,11 +99,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 		}
 	};
 
-	useEffect(() => {
-		fetchMessages();
-	}, [selectedChat]);
 	const sendMessage = async e => {
 		if (e.key === 'Enter' && newMessage) {
+			clearTimeout(typingTimeOutFunc);
+			setTyping(false);
+			socket.emit('stop typing', selectedChat._id);
 			// Send message logic here
 			try {
 				const config = {
@@ -82,9 +122,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 					config
 				);
 
-				console.log(data);
+				// send message
+				socket.emit('new message', data);
 
-				setMessages('');
 				setMessages(prevstate => [...prevstate, data]);
 			} catch (error) {
 				toast({
@@ -95,14 +135,36 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 					isClosable: true,
 					position: 'bottom',
 				});
+			} finally {
+				setNewMessage('');
 			}
 		}
 	};
 	const typingHandler = e => {
 		setNewMessage(e.target.value);
 
-		// Typing indicator logic here
+		if (!socketConnected) return;
+
+		if (!typing) {
+			setTyping(true);
+			socket.emit('typing', selectedChat._id);
+		}
+		let lastTypingTime = new Date().getTime();
+		var timerLength = 3000;
+
+		clearTimeout(typingTimeOutFunc);
+		setTypingTimeOutFunc(
+			setTimeout(() => {
+				var timeNow = new Date().getTime();
+				var timeDiff = timeNow - lastTypingTime;
+				if (timeDiff >= timerLength && typing) {
+					socket.emit('stop typing', selectedChat._id);
+					setTyping(false);
+				}
+			}, timerLength)
+		);
 	};
+
 	return (
 		<>
 			{selectedChat ? (
@@ -176,6 +238,21 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 							</div>
 						)}
 						<FormControl onKeyDown={sendMessage} isRequired mt='3'>
+							{isTyping ? (
+								<div>
+									<Lottie
+										animationData={animationData}
+										loop={true}
+										// renderer='xMidYMid slice'
+										// // options={defaultOptions}
+										style={{
+											marginBottom: 15,
+											marginLeft: 0,
+											width: 70,
+										}}
+									/>
+								</div>
+							) : null}
 							<Input
 								placeholder='Enter a message...'
 								variant={'filled'}

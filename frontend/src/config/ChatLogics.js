@@ -45,3 +45,8 @@ export const getSender = (loggedUser, users) => {
 export const getSenderFully = (loggedUser, users) => {
 	return users[0]._id === loggedUser._id ? users[1] : users[0];
 };
+
+export const shrinkPic = pic => {
+	const replaced = pic.replace('upload/', 'upload/w_100,h_100,c_fill/');
+	return replaced;
+};

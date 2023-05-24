@@ -14,6 +14,7 @@ import {
 	Text,
 	useDisclosure,
 } from '@chakra-ui/react';
+import { shrinkPic } from '../../config/ChatLogics';
 
 const ProfileModal = ({ user, children }) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -48,7 +49,7 @@ const ProfileModal = ({ user, children }) => {
 							borderRadius={'full'}
 							objectFit={'cover'}
 							boxSize='150px'
-							src={user.pic}
+							src={shrinkPic(user.pic)}
 							alt={user.name}
 						/>
 						<Text

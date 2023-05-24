@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChatState } from '../../context/ChatProvider';
 import { Avatar, Box, Text } from '@chakra-ui/react';
+import { shrinkPic } from '../../config/ChatLogics';
 
 const UserListItem = ({ userItem, handleFunction }) => {
 	return (
@@ -21,7 +22,7 @@ const UserListItem = ({ userItem, handleFunction }) => {
 				mr={2}
 				size={'sm'}
 				name={userItem.name}
-				src={userItem.pic}
+				src={shrinkPic(userItem.pic)}
 			/>
 			<Box>
 				<Text>{userItem.name}</Text>

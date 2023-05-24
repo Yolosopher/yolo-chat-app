@@ -3,6 +3,7 @@ import http from 'http';
 import app from './app';
 import { PORT, MONGO_URL } from './config';
 import 'colors';
+import socketio from './socketio';
 
 const runner = async () => {
 	try {
@@ -22,7 +23,7 @@ const runner = async () => {
 		const httpServer = http.createServer(app);
 
 		// socket io
-		// const io = socketio(httpServer);
+		const io = socketio(httpServer);
 		// console.log(io);
 
 		// start http server

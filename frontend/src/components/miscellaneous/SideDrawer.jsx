@@ -28,6 +28,7 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import ChatLoading from '../ChatLoading';
 import UserListItem from '../user/UserListItem';
+import { shrinkPic } from '../../config/ChatLogics';
 
 const SideDrawer = () => {
 	const history = useHistory();
@@ -159,7 +160,7 @@ const SideDrawer = () => {
 								size={'sm'}
 								cursor={'pointer'}
 								name={user.name}
-								src={user.pic}
+								src={shrinkPic(user.pic)}
 							/>
 						</MenuButton>
 						<MenuList>
