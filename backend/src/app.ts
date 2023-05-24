@@ -4,6 +4,7 @@ import userRoutes from './routes/user.router';
 import notFoundMiddleware from './middlewares/notfound.middleware';
 import errorHandlerMiddleware from './middlewares/error.middleware';
 import chatRoutes from './routes/chat.router';
+import messageRoutes from './routes/message.router';
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/user', userRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/message', messageRoutes);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
