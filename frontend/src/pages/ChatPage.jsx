@@ -14,6 +14,8 @@ const ChatPage = () => {
 	const history = useHistory();
 	const { user } = ChatState();
 
+	const [fetchAgain, setFetchAgain] = useState(false);
+
 	useLayoutEffect(() => {
 		const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
@@ -29,8 +31,13 @@ const ChatPage = () => {
 				w='100%'
 				h='91.5vh'
 				p='10px'>
-				{user && <MyChats />}
-				{user && <ChatBox />}
+				{user && <MyChats fetchAgain={fetchAgain} />}
+				{user && (
+					<ChatBox
+						fetchAgain={fetchAgain}
+						setFetchAgain={setFetchAgain}
+					/>
+				)}
 			</Box>
 		</div>
 	);

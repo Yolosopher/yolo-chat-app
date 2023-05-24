@@ -15,7 +15,7 @@ import {
 	useDisclosure,
 } from '@chakra-ui/react';
 
-const ProfileModel = ({ user, children }) => {
+const ProfileModal = ({ user, children }) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	return (
 		<>
@@ -46,6 +46,7 @@ const ProfileModel = ({ user, children }) => {
 						justifyContent={'center'}>
 						<Image
 							borderRadius={'full'}
+							objectFit={'cover'}
 							boxSize='150px'
 							src={user.pic}
 							alt={user.name}
@@ -68,4 +69,4 @@ const ProfileModel = ({ user, children }) => {
 	);
 };
 
-export default ProfileModel;
+export default ProfileModal;

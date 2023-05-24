@@ -23,7 +23,7 @@ import React from 'react';
 import { useState } from 'react';
 import { SearchIcon, BellIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { ChatState } from '../../context/ChatProvider';
-import ProfileModel from './ProfileModel';
+import ProfileModal from './ProfileModal';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import ChatLoading from '../ChatLoading';
@@ -32,15 +32,7 @@ import UserListItem from '../user/UserListItem';
 const SideDrawer = () => {
 	const history = useHistory();
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const {
-		user,
-		login,
-		logout,
-		selectedChat,
-		setSelectedChat,
-		chats,
-		setChats,
-	} = ChatState();
+	const { user, logout, setSelectedChat, chats, setChats } = ChatState();
 
 	const toast = useToast();
 
@@ -171,9 +163,9 @@ const SideDrawer = () => {
 							/>
 						</MenuButton>
 						<MenuList>
-							<ProfileModel user={user}>
+							<ProfileModal user={user}>
 								<MenuItem>My Profile</MenuItem>
-							</ProfileModel>
+							</ProfileModal>
 							<MenuDivider />
 							<MenuItem onClick={logoutHandler}>Logout</MenuItem>
 						</MenuList>
