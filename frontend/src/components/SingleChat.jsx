@@ -24,15 +24,16 @@ import animationData from '../animations/typing.json';
 const ENDPOINT = 'http://localhost:5000';
 var socket, selectedChatCompare;
 
-const SingleChat = ({ fetchAgain, setFetchAgain }) => {
-	const [messages, setMessages] = useState([]);
-	const [loading, setLoading] = useState(false);
-	const [newMessage, setNewMessage] = useState('');
-	const [socketConnected, setSocketConnected] = useState(false);
-	const [typing, setTyping] = useState(false);
-	const [isTyping, setIsTyping] = useState(false);
-	const [typingTimeOutFunc, setTypingTimeOutFunc] = useState(null);
+const showTyping = (typers, selfId) => {
+	if (typers.length === 0) return false;
 
+	const typer = typers.find(t => t.typing === true && t.typer !== selfId);
+	if (!typer) return false;
+
+	return true;
+};
+
+const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 	const {
 		user,
 		selectedChat,
@@ -40,6 +41,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 		notifications,
 		setNotifications,
 	} = ChatState();
+	const [messages, setMessages] = useState([]);
+	const [loading, setLoading] = useState(false);
+	const [newMessage, setNewMessage] = useState('');
+	const [socketConnected, setSocketConnected] = useState(false);
+	const [typing, setTyping] = useState(false);
+	const [typingTimeOutFunc, setTypingTimeOutFunc] = useState(null);
+	const [typers, setTypers] = useState([]);
 
 	const toast = useToast();
 
@@ -47,14 +55,46 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 		socket = io(ENDPOINT);
 		socket.emit('setup', user);
 		socket.on('connected', () => setSocketConnected(true));
-		socket.on('typing', () => setIsTyping(true));
-		socket.on('stop typing', () => setIsTyping(false));
+		socket.on('typing', ({ chatId, typer }) => {
+			setTypers(prevstate =>
+				prevstate.map(t => {
+					return {
+						typer: t.typer,
+						typing: t.typer === typer ? true : t.typing,
+					};
+				})
+			);
+		});
+		socket.on('stop typing', ({ chatId, typer }) => {
+			setTypers(prevstate =>
+				prevstate.map(t => {
+					return {
+						typer: t.typer,
+						typing: t.typer === typer ? false : t.typing,
+					};
+				})
+			);
+			if (typer === user._id) {
+				return;
+			}
+		});
 	}, []);
 
 	useEffect(() => {
 		fetchMessages();
 
 		selectedChatCompare = selectedChat;
+
+		if (selectedChat) {
+			if (Array.isArray(selectedChat.users)) {
+				setTypers(
+					selectedChat.users.map(usr => {
+						return { typer: usr._id, typing: false };
+					})
+				);
+			}
+			readRemoveNotifications(selectedChat._id);
+		}
 	}, [selectedChat]);
 
 	useEffect(() => {
@@ -71,6 +111,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 				}
 			} else {
 				setMessages([...messages, newMessageRecieved]);
+				// remove from notifications db
+				readRemoveNotifications(newMessageRecieved.chat._id);
 			}
 		});
 	});
@@ -89,6 +131,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
 			console.log('remove notif data');
 			console.log(data);
+
+			setNotifications(data.messages);
 		} catch (error) {
 			console.log(error.message);
 		}
@@ -136,7 +180,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 		if (e.key === 'Enter' && newMessage) {
 			clearTimeout(typingTimeOutFunc);
 			setTyping(false);
-			socket.emit('stop typing', selectedChat._id);
+			socket.emit('stop typing', {
+				chatId: selectedChat._id,
+				typer: user._id,
+			});
 			// Send message logic here
 			try {
 				const config = {
@@ -180,7 +227,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
 		if (!typing) {
 			setTyping(true);
-			socket.emit('typing', selectedChat._id);
+			socket.emit('typing', {
+				chatId: selectedChat._id,
+				typer: user._id,
+			});
 		}
 		let lastTypingTime = new Date().getTime();
 		var timerLength = 3000;
@@ -191,7 +241,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 				var timeNow = new Date().getTime();
 				var timeDiff = timeNow - lastTypingTime;
 				if (timeDiff >= timerLength && typing) {
-					socket.emit('stop typing', selectedChat._id);
+					socket.emit('stop typing', {
+						chatId: selectedChat._id,
+						typer: user._id,
+					});
 					setTyping(false);
 				}
 			}, timerLength)
@@ -271,7 +324,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 							</div>
 						)}
 						<FormControl onKeyDown={sendMessage} isRequired mt='3'>
-							{isTyping ? (
+							{showTyping(typers, user._id) ? (
 								<div>
 									<Lottie
 										animationData={animationData}

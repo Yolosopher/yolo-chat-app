@@ -42,7 +42,14 @@ export const sendMessage = expressAsyncHandler(
 			for (let i = 0; i < updatedChat.users.length; i++) {
 				const userId = String(updatedChat.users[i]);
 				// @ts-ignore
-				if (userId !== req.user._id) {
+				const selfId = String(req.user._id);
+				console.log('comparing 2:');
+				console.log(userId);
+				console.log(selfId);
+				// @ts-ignore
+				console.log(selfId !== userId);
+				// @ts-ignore
+				if (selfId !== userId) {
 					// add notification
 					await NotificationModel.findOneAndUpdate(
 						{ user: userId },

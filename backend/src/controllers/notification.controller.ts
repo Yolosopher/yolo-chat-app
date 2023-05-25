@@ -55,10 +55,10 @@ export const readChatFromNotifications = expressAsyncHandler(
 			throw new Error('Chat ID is required');
 		}
 
-		const foundNotification: any = await NotifModel.findOne({
+		var foundNotification: any = await NotifModel.findOne({
 			user: userId,
 		})
-			.populate('messages')
+			.populate('messages', 'chat sender')
 			.populate('user', '-password');
 
 		const filteredNotifMessages = foundNotification.messages.filter(
@@ -68,6 +68,21 @@ export const readChatFromNotifications = expressAsyncHandler(
 		foundNotification.messages = filteredNotifMessages;
 
 		await foundNotification.save();
+
+		foundNotification = await foundNotification.populate(
+			'messages.chat',
+			'name users groupAdmin isGroupChat'
+		);
+
+		foundNotification = await UserModel.populate(foundNotification, {
+			path: 'messages.sender',
+			select: 'name pic email',
+		});
+
+		foundNotification = await UserModel.populate(foundNotification, {
+			path: 'messages.chat.users',
+			select: 'name pic email',
+		});
 
 		if (!foundNotification) {
 			res.status(404);
@@ -121,21 +136,6 @@ export const accessFetchNotifications = expressAsyncHandler(
 			.populate('messages', 'chat sender')
 			.populate('user', '-password');
 
-		foundNotification = await foundNotification.populate(
-			'messages.chat',
-			'name users groupAdmin isGroupChat'
-		);
-
-		foundNotification = await UserModel.populate(foundNotification, {
-			path: 'messages.sender',
-			select: 'name pic email',
-		});
-
-		foundNotification = await UserModel.populate(foundNotification, {
-			path: 'messages.chat.users',
-			select: 'name pic email',
-		});
-
 		// .populate('messages', [
 		// 	'chat',
 		// 	{ path: 'sender', select: 'name pic' },
@@ -176,6 +176,20 @@ export const accessFetchNotifications = expressAsyncHandler(
 
 			res.status(201).json(newNotification);
 		} else {
+			foundNotification = await foundNotification.populate(
+				'messages.chat',
+				'name users groupAdmin isGroupChat'
+			);
+
+			foundNotification = await UserModel.populate(foundNotification, {
+				path: 'messages.sender',
+				select: 'name pic email',
+			});
+
+			foundNotification = await UserModel.populate(foundNotification, {
+				path: 'messages.chat.users',
+				select: 'name pic email',
+			});
 			res.status(200).json(foundNotification);
 		}
 	}

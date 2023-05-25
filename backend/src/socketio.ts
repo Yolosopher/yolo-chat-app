@@ -35,11 +35,11 @@ const socketio = (httpServer: HttpServer) => {
 		socket.off('setup', userData => {
 			socket.leave(userData._id);
 		});
-		socket.on('typing', room => {
-			socket.to(room).emit('typing');
+		socket.on('typing', ({ chatId, typer }) => {
+			io.in(chatId).emit('typing', { chatId, typer });
 		});
-		socket.on('stop typing', room => {
-			socket.to(room).emit('stop typing');
+		socket.on('stop typing', ({ chatId, typer }) => {
+			io.in(chatId).emit('stop typing', { chatId, typer });
 		});
 	});
 };

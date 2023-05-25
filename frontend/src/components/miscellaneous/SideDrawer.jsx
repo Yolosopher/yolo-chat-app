@@ -19,7 +19,7 @@ import {
 	useDisclosure,
 	useToast,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { SearchIcon, BellIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { ChatState } from '../../context/ChatProvider';
@@ -49,25 +49,29 @@ const SideDrawer = () => {
 	const [search, setSearch] = useState('');
 	const [searchResults, setSearchResults] = useState([]);
 	const [loading, setLoading] = useState(false);
-	const [loadingChat, setLoadingChat] = useState(true);
+	const [loadingChat, setLoadingChat] = useState(false);
 
 	const logoutHandler = () => {
 		logout();
 		history.push('/');
 	};
 
+	useEffect(() => {
+		handleSearch();
+	}, []);
+
 	const handleSearch = async e => {
-		e.preventDefault();
-		if (!search) {
-			toast({
-				title: 'Please enter something to search',
-				status: 'warning',
-				duration: 5000,
-				isClosable: true,
-				position: 'top-left',
-			});
-			return;
-		}
+		e && e.preventDefault();
+		// if (!search) {
+		// 	toast({
+		// 		title: 'Please enter something to search',
+		// 		status: 'warning',
+		// 		duration: 5000,
+		// 		isClosable: true,
+		// 		position: 'top-left',
+		// 	});
+		// 	return;
+		// }
 
 		try {
 			setLoading(true);

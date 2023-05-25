@@ -67,6 +67,7 @@ export const loginUser = expressAsyncHandler(
 
 export const allUsers = expressAsyncHandler(
 	async (req: Request, res: Response) => {
+		const limit = Number(req.query.limit) ?? 20;
 		const keyword = req.query.search
 			? {
 					$or: [
@@ -76,10 +77,12 @@ export const allUsers = expressAsyncHandler(
 			  }
 			: {};
 
-		const users = await UserModel.find(keyword).find({
-			// @ts-ignore
-			_id: { $ne: req.user?._id },
-		});
+		const users = await UserModel.find(keyword)
+			.find({
+				// @ts-ignore
+				_id: { $ne: req.user?._id },
+			})
+			.limit(limit);
 
 		res.status(200).json(users);
 	}
