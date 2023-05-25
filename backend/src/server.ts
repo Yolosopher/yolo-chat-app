@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import http from 'http';
 import app from './app';
-import { PORT, MONGO_URL } from './config';
+import { PORT, MONGO_URL, NODE_ENV } from './config';
 import 'colors';
 import socketio from './socketio';
 
@@ -15,16 +15,11 @@ const runner = async () => {
 		});
 		console.log('DB Connected', conn.connection.host);
 
-		// connect to redis client
-		// await redisClient.connect();
-		// console.log('Redis Connected');
-
 		// initialize http server
 		const httpServer = http.createServer(app);
 
 		// socket io
-		const io = socketio(httpServer);
-		// console.log(io);
+		socketio(httpServer);
 
 		// start http server
 		httpServer.listen(PORT, () =>

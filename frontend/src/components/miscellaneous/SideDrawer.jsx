@@ -58,7 +58,6 @@ const SideDrawer = () => {
 
 	const handleSearch = async e => {
 		e.preventDefault();
-		console.log('searching');
 		if (!search) {
 			toast({
 				title: 'Please enter something to search',

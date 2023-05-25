@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev:server": "nodemon backend/src/server.ts",
 		"build:server": "tsc",
-		"start:server": "backend/dist/server.ts"
+		"start:server": "backend/dist/server.js"
 	},
 	"dependencies": {
 		"bcrypt": "^5.1.0",

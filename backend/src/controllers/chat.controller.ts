@@ -23,14 +23,10 @@ export const accessChat = expressAsyncHandler(
 			.populate('users', '-password')
 			.populate('latestMessage');
 
-		// console.log('isChat first:');
-		// console.log(isChat);
 		isChat = await UserModel.populate(isChat, {
 			path: 'latestMessage.sender',
 			select: 'name pic email',
 		});
-		// console.log('isChat second:');
-		// console.log(isChat);
 
 		if (isChat.length > 0) {
 			res.status(200).json(isChat[0]);
