@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import axios from 'axios';
 import { useState } from 'react';
 import { Box } from '@chakra-ui/react';
@@ -6,19 +6,38 @@ import { ChatState } from '../context/ChatProvider';
 import SideDrawer from '../components/miscellaneous/SideDrawer';
 import MyChats from '../components/MyChats';
 import ChatBox from '../components/ChatBox';
-import { useHistory } from 'react-router-dom';
 
 const ChatPage = () => {
-	const history = useHistory();
-	const { user } = ChatState();
+	const { user, setNotifications } = ChatState();
 
 	const [fetchAgain, setFetchAgain] = useState(false);
 
-	useLayoutEffect(() => {
-		const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+	const fetchNotifications = async () => {
+		if (!user) return;
+		const config = {
+			headers: {
+				Authorization: `Bearer ${user.token}`,
+			},
+		};
 
-		if (!userInfo) history.push('/');
-	}, [history]);
+		const { data } = await axios.get('/api/notification', config);
+
+		setNotifications(data.messages);
+
+		try {
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	useEffect(() => {
+		fetchNotifications();
+	}, []);
+	// useLayoutEffect(() => {
+	// 	const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
+	// 	if (!userInfo) history.push('/');
+	// }, [history]);
 
 	return (
 		<div style={{ width: '100%' }}>

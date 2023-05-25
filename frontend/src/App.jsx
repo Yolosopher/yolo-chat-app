@@ -31,6 +31,7 @@ function App() {
 					if (!data.token) {
 						throw new Error('Invalid token');
 					}
+					history.push('/chats');
 				} catch (error) {
 					logout();
 					history.push('/');

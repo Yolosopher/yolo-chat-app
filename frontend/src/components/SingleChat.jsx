@@ -66,6 +66,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 				// give notification
 				if (!notifications.includes(newMessageRecieved)) {
 					setNotifications([newMessageRecieved, ...notifications]);
+
 					setFetchAgain(!fetchAgain);
 				}
 			} else {
@@ -73,7 +74,25 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 			}
 		});
 	});
+	const readRemoveNotifications = async chatid => {
+		try {
+			const config = {
+				headers: {
+					Authorization: `Bearer ${user.token}`,
+				},
+			};
 
+			const { data } = await axios.delete(
+				`/api/notification/chat/${chatid}`,
+				config
+			);
+
+			console.log('remove notif data');
+			console.log(data);
+		} catch (error) {
+			console.log(error.message);
+		}
+	};
 	const fetchMessages = async () => {
 		if (!selectedChat) return;
 
@@ -90,13 +109,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 				config
 			);
 
+			// REMOVE notification
 			const filteredNotifs = notifications.filter(
 				notif => notif.chat._id !== selectedChat._id
 			);
 			setNotifications(filteredNotifs);
+			readRemoveNotifications(selectedChat.id);
 
 			setMessages(data);
-
 			socket.emit('join chat', selectedChat._id);
 		} catch (error) {
 			toast({

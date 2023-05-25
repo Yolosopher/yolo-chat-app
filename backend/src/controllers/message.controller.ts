@@ -3,6 +3,7 @@ import expressAsyncHandler from 'express-async-handler';
 import MessageModel from '../models/message.model';
 import UserModel from '../models/user.model';
 import ChatModel from '../models/chat.model';
+import NotificationModel from '../models/notification.model';
 
 export const sendMessage = expressAsyncHandler(
 	async (req: Request, res: Response) => {
@@ -30,13 +31,27 @@ export const sendMessage = expressAsyncHandler(
 				select: 'name pic email',
 			});
 
-			await ChatModel.findByIdAndUpdate(
+			const updatedChat = await ChatModel.findByIdAndUpdate(
 				chatId,
 				{
 					latestMessage: message,
 				},
 				{ new: true }
 			);
+
+			for (let i = 0; i < updatedChat.users.length; i++) {
+				const userId = String(updatedChat.users[i]);
+				// @ts-ignore
+				if (userId !== req.user._id) {
+					// add notification
+					await NotificationModel.findOneAndUpdate(
+						{ user: userId },
+						{
+							$push: { messages: message._id },
+						}
+					);
+				}
+			}
 
 			res.status(200).json(message);
 		} catch (error) {

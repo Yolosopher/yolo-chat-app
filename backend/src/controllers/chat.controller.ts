@@ -32,7 +32,7 @@ export const accessChat = expressAsyncHandler(
 			res.status(200).json(isChat[0]);
 		} else {
 			var chatData = {
-				chatName: 'sender',
+				chatName: 'personal',
 				isGroupChat: false,
 				// @ts-ignore
 				users: [req.user._id, userId],
