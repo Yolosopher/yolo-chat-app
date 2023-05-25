@@ -48,3 +48,19 @@ export const shrinkPic = pic => {
 	const replaced = pic.replace('upload/', 'upload/w_100,h_100,c_fill/');
 	return replaced;
 };
+
+//groupSameChatNotificationsTogether
+export const gscnt = notifs => {
+	const newGroupOfNotifs = new Map();
+
+	for (let i = 0; i < notifs.length; i++) {
+		const notif = notifs[i];
+		if (!newGroupOfNotifs.has(notif.chat._id)) {
+			newGroupOfNotifs.set(notif.chat._id, [notif]);
+		} else {
+			newGroupOfNotifs.get(notif.chat._id).push(notif);
+		}
+	}
+
+	return newGroupOfNotifs;
+};

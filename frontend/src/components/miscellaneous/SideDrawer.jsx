@@ -28,7 +28,7 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import ChatLoading from '../ChatLoading';
 import UserListItem from '../user/UserListItem';
-import { getSender, shrinkPic } from '../../config/ChatLogics';
+import { getSender, gscnt, shrinkPic } from '../../config/ChatLogics';
 import NotificationBadge from './NotificationBadge';
 
 const SideDrawer = () => {
@@ -163,25 +163,39 @@ const SideDrawer = () => {
 						</MenuButton>
 						<MenuList pl={2}>
 							{!notifications.length && 'No new messages'}
-							{notifications.map(notif => (
-								<MenuItem
-									key={notif._id}
-									onClick={() => {
-										setSelectedChat(notif.chat);
-										setNotifications(prevstate =>
-											prevstate.filter(
-												n => n._id !== notif._id
-											)
-										);
-									}}>
-									{notif.chat.isGroupChat
-										? `New Message in ${notif.chat.chatName}`
-										: `New Message from ${getSender(
-												user,
-												notif.chat.users
-										  )}`}
-								</MenuItem>
-							))}
+							{[...gscnt(notifications).values()].map(notifs => {
+								// console.log('notifs');
+								// console.log(notifs);
+								const sortedNotifs = notifs.sort(
+									(a, b) => a.updatedAt - b.updatedAt
+								);
+								const notif = sortedNotifs[0];
+								return (
+									<MenuItem
+										position={'relative'}
+										key={notif._id}
+										onClick={() => {
+											setSelectedChat(notif.chat);
+											setNotifications(prevstate =>
+												prevstate.filter(
+													n => n._id !== notif._id
+												)
+											);
+										}}>
+										{notif.chat.isGroupChat
+											? `${notif.chat.chatName}`
+											: `${getSender(
+													user,
+													notif.chat.users
+											  )}`}
+										<NotificationBadge
+											top={5}
+											right={5}
+											count={notifs.length}
+										/>
+									</MenuItem>
+								);
+							})}
 						</MenuList>
 					</Menu>
 					<Menu>
