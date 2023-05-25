@@ -33,7 +33,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 	const [isTyping, setIsTyping] = useState(false);
 	const [typingTimeOutFunc, setTypingTimeOutFunc] = useState(null);
 
-	const { user, selectedChat, setSelectedChat } = ChatState();
+	const {
+		user,
+		selectedChat,
+		setSelectedChat,
+		notifications,
+		setNotifications,
+	} = ChatState();
 
 	const toast = useToast();
 
@@ -60,6 +66,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 				selectedChatCompare._id !== newMessageRecieved.chat._id
 			) {
 				// give notification
+				if (!notifications.includes(newMessageRecieved)) {
+					setNotifications([newMessageRecieved, ...notifications]);
+					setFetchAgain(!fetchAgain);
+				}
 			} else {
 				setMessages([...messages, newMessageRecieved]);
 			}

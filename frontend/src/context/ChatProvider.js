@@ -12,6 +12,7 @@ const ChatProvider = ({ children }) => {
 	const [user, setUser] = useState(defaultUser);
 	const [selectedChat, setSelectedChat] = useState(null);
 	const [chats, setChats] = useState([]);
+	const [notifications, setNotifications] = useState([]);
 
 	const logout = () => {
 		localStorage.removeItem('userInfo');
@@ -33,6 +34,8 @@ const ChatProvider = ({ children }) => {
 				setSelectedChat,
 				chats,
 				setChats,
+				notifications,
+				setNotifications,
 			}}>
 			{children}
 		</ChatContext.Provider>
