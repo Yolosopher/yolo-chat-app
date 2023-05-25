@@ -8,7 +8,7 @@ import {
 	Tabs,
 	Text,
 } from '@chakra-ui/react';
-import React, { useEffect, useLayoutEffect } from 'react';
+import React, { useLayoutEffect } from 'react';
 import SignUp from '../components/authentication/SignUp';
 import Login from '../components/authentication/Login';
 import { useHistory } from 'react-router-dom';

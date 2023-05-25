@@ -148,14 +148,14 @@ const SignUp = () => {
 						onChange={e => setName(e.target.value)}
 					/>
 				</FormControl>
-				<FormControl id='email' isRequired>
+				<FormControl id='email2' isRequired>
 					<FormLabel>Email</FormLabel>
 					<Input
 						placeholder='Enter Your Email'
 						onChange={e => setEmail(e.target.value)}
 					/>
 				</FormControl>
-				<FormControl id='password' isRequired>
+				<FormControl id='password2' isRequired>
 					<FormLabel>Password</FormLabel>
 					<InputGroup>
 						<Input

@@ -1,9 +1,7 @@
 import React, { useLayoutEffect } from 'react';
 import axios from 'axios';
 import { useState } from 'react';
-import { Button, Alert, AlertIcon, Box } from '@chakra-ui/react';
-import BeatLoader from 'react-spinners/BeatLoader';
-import { useEffect } from 'react';
+import { Box } from '@chakra-ui/react';
 import { ChatState } from '../context/ChatProvider';
 import SideDrawer from '../components/miscellaneous/SideDrawer';
 import MyChats from '../components/MyChats';

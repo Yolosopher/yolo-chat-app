@@ -17,26 +17,28 @@ function App() {
 
 		if (!userInfo) {
 			logout();
-		}
+			history.push('/');
+		} else {
+			const checkToken = async () => {
+				const config = {
+					headers: {
+						Authorization: `Bearer ${userInfo.token}`,
+					},
+				};
 
-		const checkToken = async () => {
-			const config = {
-				headers: {
-					Authorization: `Bearer ${userInfo.token}`,
-				},
+				try {
+					const { data } = await axios.patch('/api/user', {}, config);
+					if (!data.token) {
+						throw new Error('Invalid token');
+					}
+				} catch (error) {
+					logout();
+					history.push('/');
+				}
 			};
 
-			try {
-				const { data } = await axios.patch('/api/user', config);
-				if (!data.token) {
-					throw new Error('Invalid token');
-				}
-			} catch (error) {
-				logout();
-			}
-		};
-
-		checkToken();
+			checkToken();
+		}
 	}, [history]);
 
 	return (

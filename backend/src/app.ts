@@ -8,6 +8,7 @@ import messageRoutes from './routes/message.router';
 import { NODE_ENV } from './config';
 import path from 'path';
 import fs from 'fs';
+import notificationRoutes from './routes/notification.router';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(json());
 app.use('/api/user', userRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/message', messageRoutes);
+app.use('/api/notification', notificationRoutes);
 
 if (NODE_ENV === 'production') {
 	const __dirname = path.resolve();

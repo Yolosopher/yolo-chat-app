@@ -6,6 +6,7 @@ import {
 	checkToken,
 } from '../controllers/user.controller';
 import protect from '../middlewares/auth.middleware';
+import { readNotification } from '../controllers/notification.controller';
 
 const userRoutes = Router();
 
@@ -14,6 +15,7 @@ userRoutes
 	.get(protect, allUsers)
 	.post(loginUser)
 	.patch(protect, checkToken);
+
 userRoutes.route('/register').post(registerUser);
 
 export default userRoutes;
