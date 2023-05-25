@@ -84,3 +84,10 @@ export const allUsers = expressAsyncHandler(
 		res.status(200).json(users);
 	}
 );
+
+export const checkToken = expressAsyncHandler(
+	async (req: Request, res: Response) => {
+		// @ts-ignore
+		res.status(200).json({ token: req.user?.token });
+	}
+);

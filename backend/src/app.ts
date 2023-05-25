@@ -15,20 +15,26 @@ app.use(json());
 
 // FOR DEPLOYMENT
 
-if (NODE_ENV === 'production') {
-	const __dirname = path.resolve();
-	app.use(expStatic(path.join(__dirname, '/frontend/build')));
-} else {
-	app.get('/', (req, res) => {
-		res.send('API is running...');
-	});
-}
-
 // FOR DEPLOYMENT
 
 app.use('/api/user', userRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/message', messageRoutes);
+
+if (NODE_ENV === 'production') {
+	const __dirname = path.resolve();
+	app.use(expStatic(path.join(__dirname, '/frontend/build')));
+
+	app.get('*', (req, res) => {
+		res.sendFile(
+			path.resolve(__dirname, 'frontend', 'build', 'index.html')
+		);
+	});
+} else {
+	app.get('/', (req, res) => {
+		res.send('API is running...');
+	});
+}
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

@@ -8,12 +8,20 @@ import socketio from './socketio';
 const runner = async () => {
 	try {
 		// connect to mongodb
-		const conn = await mongoose.connect(MONGO_URL, {
-			// @ts-ignore
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
+		const conn = await mongoose.connect(
+			MONGO_URL + (NODE_ENV === 'production' ? '-prod' : ''),
+			{
+				// @ts-ignore
+				useNewUrlParser: true,
+				useUnifiedTopology: true,
+			}
+		);
+		console.log('DB Connected');
+		console.log({
+			host: conn.connection.host,
+			name: conn.connection.name,
+			port: conn.connection.port,
 		});
-		console.log('DB Connected', conn.connection.host);
 
 		// initialize http server
 		const httpServer = http.createServer(app);

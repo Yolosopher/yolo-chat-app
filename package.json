@@ -4,9 +4,9 @@
 	"main": "server.js",
 	"license": "MIT",
 	"scripts": {
-		"dev:server": "nodemon backend/src/server.ts",
-		"build:server": "tsc",
-		"start:server": "backend/dist/server.js"
+		"dev": "nodemon backend/src/server.ts",
+		"build": "tsc",
+		"start": "backend/dist/server.js"
 	},
 	"dependencies": {
 		"bcrypt": "^5.1.0",

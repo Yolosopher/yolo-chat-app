@@ -6,6 +6,7 @@ import './App.css';
 import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ChatState } from './context/ChatProvider';
+import axios from 'axios';
 
 function App() {
 	const history = useHistory();
@@ -17,6 +18,25 @@ function App() {
 		if (!userInfo) {
 			logout();
 		}
+
+		const checkToken = async () => {
+			const config = {
+				headers: {
+					Authorization: `Bearer ${userInfo.token}`,
+				},
+			};
+
+			try {
+				const { data } = await axios.patch('/api/user', config);
+				if (!data.token) {
+					throw new Error('Invalid token');
+				}
+			} catch (error) {
+				logout();
+			}
+		};
+
+		checkToken();
 	}, [history]);
 
 	return (
